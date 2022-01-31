@@ -27,7 +27,8 @@ requirements:
     - pkg-config
     - flex
     - bison
-  host:
+    - patch
+   host:
     - perl
     - libiconv  # [osx]
   run:
