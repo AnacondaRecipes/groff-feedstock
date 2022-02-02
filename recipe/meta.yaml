@@ -28,7 +28,7 @@ requirements:
     - flex
     - bison
     - patch
-   host:
+  host:
     - perl
     - libiconv  # [osx]
   run:
