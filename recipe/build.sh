@@ -1,7 +1,15 @@
-set -x
+#!/usr/bin/env bash
 
-autoreconf -vfi
-./configure --prefix=$PREFIX
+set -o xtrace -o nounset -o pipefail -o errexit
+
+# texinfo/texindex looks up awk via this (conda-forge groff 1.24.2)
+export TEXINDEX_AWK=${BUILD_PREFIX}/bin/awk
+
+# conda-forge 1.24.2: URW base35 fonts as a second source so gropdf can
+# generate font/devpdf/download. ghostscript/netpbm are not on pkgs/main;
+# HAVE_URW_FONTS is enough for the download target.
+autoreconf --force --verbose --install
+./configure --prefix=$PREFIX --with-urw-fonts-dir=${SRC_DIR}/urw-base35-fonts/fonts
 
 # Workaround for long shebang lines
 find $SRC_DIR -type f | \
@@ -10,9 +18,5 @@ find $SRC_DIR -type f | \
         -pe "s,perl -w,perl,;" \
         -pe "s,$PREFIX/bin/perl,/usr/bin/env perl,;"
 
-# Workaround for a Makefile dep-graph race on install:
-# /usr/bin/install: cannot stat './font/devpdf/download': No such file or directory
-# 1.22.4 used the build_font_files convenience target; 1.24.x dropped it.
-make -j${CPU_COUNT} font/devpdf/download
 make -j${CPU_COUNT} install
 make check
