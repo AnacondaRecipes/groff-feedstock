@@ -6,13 +6,8 @@ package:
   version: {{ version }}
 
 source:
-  - url: https://ftp.gnu.org/gnu/groff/groff-{{ version }}.tar.gz
-    sha256: f9c1efd5bebbe37fc6e1063db7473ce8df1e3e0be4ff0f43ce04fce57e9c5dd9
-  # conda-forge 1.24.2: URW fonts at build time for gropdf foundry generation.
-  # ghostscript/netpbm (also in CF) are not on pkgs/main.
-  - url: https://github.com/ArtifexSoftware/urw-base35-fonts/archive/20200910.tar.gz
-    sha256: e0d9b7f11885fdfdc4987f06b2aa0565ad2a4af52b22e5ebf79e1a98abd0ae2f
-    folder: urw-base35-fonts
+  url: https://ftp.gnu.org/gnu/groff/groff-{{ version }}.tar.gz
+  sha256: f9c1efd5bebbe37fc6e1063db7473ce8df1e3e0be4ff0f43ce04fce57e9c5dd9
 
 build:
   number: 0
@@ -63,12 +58,9 @@ test:
 
 about:
   home: https://www.gnu.org/software/groff/
-  license: GPL-3.0-or-later AND AGPL-3.0-only
-  license_family: Other
-  license_file:
-    - COPYING
-    - urw-base35-fonts/LICENSE
-    - urw-base35-fonts/COPYING
+  license: GPL-3.0-or-later
+  license_family: GPL
+  license_file: COPYING
   summary: 'Groff (GNU troff) is a typesetting system'
   description: |
     The Groff package contains programs for processing and formatting text.
