@@ -2,20 +2,23 @@
 
 set -o xtrace -o nounset -o pipefail -o errexit
 
-# texinfo/texindex looks up awk via this
-export TEXINDEX_AWK=${BUILD_PREFIX}/bin/awk
+# conda-forge 1.24.2: texinfo's texindex looks up awk via TEXINDEX_AWK.
+# Point it at conda gawk in BUILD_PREFIX, not /usr/bin/awk.
+export TEXINDEX_AWK="${BUILD_PREFIX}/bin/awk"
 
-# Do not vendor AGPL URW base35 fonts (conda-forge 1.24.2 does).
-# Alpine 1.24.2, MSYS2, and OpenBSD all build without --with-urw-fonts-dir.
-# --without-urw-fonts skips the U foundry; --without-gs because ghostscript
-# is not on pkgs/main. gropdf still works with groff's built-in PDF fonts.
 autoreconf --force --verbose --install
-./configure \
-    --prefix="${PREFIX}" \
-    --without-x \
-    --without-gs \
-    --without-urw-fonts \
-    --disable-rpath
+
+# Same as AR 1.22.4: only --prefix. Do not pass --without-x / --without-gs /
+# --without-urw-fonts — those were never enabled on pkgs/main (no X, gs, or
+# URW fonts in the PBP env). Autoconf then selects gropdf "basic" (14 PDF
+# standard fonts), which is groff 1.24.0 restoring 1.23.0 behaviour
+# (ChangeLog 2026-01-20). Do not pass Alpine's --disable-rpath: that is a
+# musl packaging flag; conda compilers already write our RPATH.
+#
+# Not vendoring Artifex urw-base35-fonts (AGPL-3.0). Debian/Gentoo use a
+# system fonts-urw-base35 / media-fonts/urw-fonts package; conda-forge and
+# Nix (enableUrwFonts) vendor the tarball. We cannot ship AGPL on main.
+./configure --prefix="${PREFIX}"
 
 # Workaround for long shebang lines
 find "${SRC_DIR}" -type f | \
@@ -24,5 +27,16 @@ find "${SRC_DIR}" -type f | \
         -pe "s,perl -w,perl,;" \
         -pe "s,${PREFIX}/bin/perl,/usr/bin/env perl,;"
 
-make -j"${CPU_COUNT}" install
+# 1.22.4 needed a pre-install `make font/devpdf/build_font_files` because
+# that stamp target generated font/devpdf/download and the Makefile dep
+# graph could race (`install: cannot stat './font/devpdf/download'`).
+# 1.24.2 deleted that stamp; `font/devpdf/download` is a real target with
+# explicit deps (ChangeLog 2026-01-26 / font/devpdf/devpdf.am). Do not
+# invoke the old name — it is gone.
+#
+# A *different* parallel-install race remains on 1.24.2 (Gentoo #983579:
+# `install: ... tty.tmac: File exists`). Compile in parallel, install
+# serially, matching Gentoo 1.24.2.
+make -j"${CPU_COUNT}"
+make -j1 install
 make check
