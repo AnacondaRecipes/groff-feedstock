@@ -10,8 +10,9 @@ find $SRC_DIR -type f | \
         -pe "s,perl -w,perl,;" \
         -pe "s,$PREFIX/bin/perl,/usr/bin/env perl,;"
 
-# Workaround for randomly occuring failure due to incorrect dep-graph in Makefile
+# Workaround for a Makefile dep-graph race on install:
 # /usr/bin/install: cannot stat './font/devpdf/download': No such file or directory
-make -j${CPU_COUNT} font/devpdf/build_font_files
+# 1.22.4 used the build_font_files convenience target; 1.24.x dropped it.
+make -j${CPU_COUNT} font/devpdf/download
 make -j${CPU_COUNT} install
 make check
