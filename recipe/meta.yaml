@@ -53,7 +53,7 @@ test:
     - gropdf --version
     - neqn --version
     - nroff --version
-    # Remainder of conda-forge 1.24.2 linux-64 bin/ (existence only).
+    # Remainder of bin/ (existence only).
     # eqn2graph/grap2graph/pic2graph shell out to netpbm; do not --version.
     - test -f $PREFIX/bin/addftinfo
     - test -f $PREFIX/bin/afmtodit
