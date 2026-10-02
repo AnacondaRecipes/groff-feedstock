@@ -12,12 +12,11 @@ autoreconf --force --verbose --install
 # --without-urw-fonts — those were never enabled on pkgs/main (no X, gs, or
 # URW fonts in the PBP env). Autoconf then selects gropdf "basic" (14 PDF
 # standard fonts), which is groff 1.24.0 restoring 1.23.0 behaviour
-# (ChangeLog 2026-01-20). Do not pass Alpine's --disable-rpath: that is a
-# musl packaging flag; conda compilers already write our RPATH.
+# (ChangeLog 2026-01-20).
 #
 # Not vendoring Artifex urw-base35-fonts (AGPL-3.0). Debian/Gentoo use a
 # system fonts-urw-base35 / media-fonts/urw-fonts package; conda-forge and
-# Nix (enableUrwFonts) vendor the tarball. We cannot ship AGPL on main.
+# Nix (enableUrwFonts) vendor the tarball.
 ./configure --prefix="${PREFIX}"
 
 # Workaround for long shebang lines
@@ -26,6 +25,12 @@ find "${SRC_DIR}" -type f | \
         -pe 's,^#!\@PERL\@ -w,#!/usr/bin/env perl,;' \
         -pe "s,perl -w,perl,;" \
         -pe "s,${PREFIX}/bin/perl,/usr/bin/env perl,;"
+
+# 1.24.2 doc/doc.am always rebuilds doc/gnu.eps from gnu.xpm via xpmtoppm
+# (netpbm). 1.22.4 copied the tarball gnu.eps when xpmtoppm was missing
+# (pkgs/main groff 1.22.4 ships share/doc/groff-1.22.4/examples/gnu.eps).
+# netpbm is not on pkgs/main. Keep the shipped EPS (same bytes as 1.22.4).
+touch "${SRC_DIR}/doc/gnu.eps"
 
 # 1.22.4 needed a pre-install `make font/devpdf/build_font_files` because
 # that stamp target generated font/devpdf/download and the Makefile dep
