@@ -53,14 +53,14 @@ test:
     - gropdf --version
     - neqn --version
     - nroff --version
+    - eqn2graph --version
+    - grap2graph --version
+    - pic2graph --version
     # Remainder of bin/ (existence only).
-    # eqn2graph/grap2graph/pic2graph shell out to netpbm; do not --version.
     - test -f $PREFIX/bin/addftinfo
     - test -f $PREFIX/bin/afmtodit
-    - test -f $PREFIX/bin/eqn2graph
     - test -f $PREFIX/bin/gdiffmk
     - test -f $PREFIX/bin/glilypond
-    - test -f $PREFIX/bin/grap2graph
     - test -f $PREFIX/bin/hpftodit
     - test -f $PREFIX/bin/lkbib
     - test -f $PREFIX/bin/lookbib
@@ -68,7 +68,6 @@ test:
     - test -f $PREFIX/bin/pdfmom
     - test -f $PREFIX/bin/pfbtops
     - test -f $PREFIX/bin/pic
-    - test -f $PREFIX/bin/pic2graph
     - test -f $PREFIX/bin/refer
     - test -f $PREFIX/bin/soelim
     - test -f $PREFIX/bin/tbl
