@@ -1,5 +1,5 @@
 {% set name = "groff" %}
-{% set version = "1.22.4" %}
+{% set version = "1.24.2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,11 +7,7 @@ package:
 
 source:
   url: https://ftp.gnu.org/gnu/groff/groff-{{ version }}.tar.gz
-  sha256: e78e7b4cb7dec310849004fa88847c44701e8d133b5d4c13057d876c1bad0293
-  patches:
-    # xref: https://trac.macports.org/ticket/59783
-    # xref: https://github.com/openembedded/openembedded-core/commit/e9beba2a
-    - 0001-Include-config.h.patch
+  sha256: f9c1efd5bebbe37fc6e1063db7473ce8df1e3e0be4ff0f43ce04fce57e9c5dd9
 
 build:
   number: 0
@@ -21,16 +17,17 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - make
     - automake
+    - gawk
     - texinfo
     - pkg-config
     - flex
     - bison
-    - patch
   host:
-    - perl
-    - libiconv  # [osx]
+    - perl {{ perl }}
+    - libiconv {{ libiconv }}  # [osx]
   run:
     - perl
 
@@ -52,13 +49,29 @@ test:
     - chem --version
     - gperl --version
     - gpinyin --version
-    - groffer --version
     - grog --version
     - gropdf --version
     - neqn --version
     - nroff --version
-    - test -f $PREFIX/bin/glilypond
+    - eqn2graph --version
+    - grap2graph --version
+    - pic2graph --version
+    # Remainder of bin/ (existence only).
+    - test -f $PREFIX/bin/addftinfo
     - test -f $PREFIX/bin/afmtodit
+    - test -f $PREFIX/bin/gdiffmk
+    - test -f $PREFIX/bin/glilypond
+    - test -f $PREFIX/bin/hpftodit
+    - test -f $PREFIX/bin/lkbib
+    - test -f $PREFIX/bin/lookbib
+    - test -f $PREFIX/bin/mmroff
+    - test -f $PREFIX/bin/pdfmom
+    - test -f $PREFIX/bin/pfbtops
+    - test -f $PREFIX/bin/pic
+    - test -f $PREFIX/bin/refer
+    - test -f $PREFIX/bin/soelim
+    - test -f $PREFIX/bin/tbl
+    - test -f $PREFIX/bin/tfmtodit
 
 about:
   home: https://www.gnu.org/software/groff/
@@ -69,7 +82,7 @@ about:
   description: |
     The Groff package contains programs for processing and formatting text.
   doc_url: https://www.gnu.org/software/groff/#documentation
-  dev_url: http://git.savannah.gnu.org/cgit/groff.git
+  dev_url: https://git.savannah.gnu.org/cgit/groff.git
 
 extra:
   recipe-maintainers:
